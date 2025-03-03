@@ -26,3 +26,11 @@ jobs:
       
       - name: Print Hello World
         run: python app.py
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to production(simulated)
+        run: echo "Deploying to production"
