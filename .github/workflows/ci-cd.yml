@@ -24,8 +24,17 @@ jobs:
       - name: Run tests
         run: pytest
       
-      - name: Print Hello World
-        run: python app.py
+      - name: Build Docker Image
+        run: docker build -t my-python-app .
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Tag Docker Image
+        run: docker tag my-python-app ghcr.io/${{ github.repository }}/my-python-app:${{ github.sha }}
+
+      - name: Push Docker Image
+        run: docker push ghcr.io/${{ github.repository }}/my-python-app:${{ github.sha }}
 
   deploy:
     needs: build
@@ -33,4 +42,4 @@ jobs:
 
     steps:
       - name: Deploy to production(simulated)
-        run: echo "Deploying to production"
+        run: echo "Deploying Docker image ghcr.io/${{ github.repository }}/my-python-app:${{ github.sha }} to container environment..."
